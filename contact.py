@@ -18,7 +18,7 @@ class Contact(object):
             self.text_contact_title, self.text_contact_title_pos = make_text( text= "CONTACT WITH ME:", font_name= 'casio-fx-702p\casio-fx-702p.ttf'\
                                                         , size= 70, pos= (self.window.get_width()/2, self.window.get_height() * 4/20)\
                                                         , text_color= (200, 200, 200), text_background_color= (0, 0, 0))
-            self.text_contact_mail, self.text_contact_mail_pos = make_text( text= "kamil.szostek1309@gmail.com", font_name= r'times new roman\times new roman.ttf'\
+            self.text_contact_mail, self.text_contact_mail_pos = make_text( text= "boban.skolimowski@gmail.com", font_name= r'times new roman\times new roman.ttf'\
                                                         , size= 70, pos= (self.window.get_width()/2, self.window.get_height() * 1/2)\
                                                         , text_color= (200, 200, 200), text_background_color= (0, 0, 0))
 
