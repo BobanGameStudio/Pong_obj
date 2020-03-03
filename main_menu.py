@@ -35,10 +35,9 @@ class Main_Menu(object):
         self.background.fill( (0, 0, 0) )
 
         #Create main menu text
-        if pg.font:
-            self.text_menu, self.text_menu_pos = make_text( text= "PONG GAME", font_name= 'casio-fx-702p\casio-fx-702p.ttf'\
-                                                        , size= 70, pos= (self.window.get_width()/2, self.window.get_height() * 3/20)\
-                                                        , text_color= (200, 200, 200), text_background_color= (0, 0, 0))
+        self.text_menu, self.text_menu_pos = make_text( text= "PONG GAME", font_name= 'casio-fx-702p\casio-fx-702p.ttf'\
+                                                    , size= 70, pos= (self.window.get_width()/2, self.window.get_height() * 3/20)\
+                                                    , text_color= (200, 200, 200), text_background_color= (0, 0, 0))
 
         #Create menu images
         img_folder = "main_menu_buttons"
