@@ -68,9 +68,7 @@ class Ball(pg.sprite.Sprite):
                         ball_speed_x = 5
                         ball_speed_y = 5
                     else:
-                        #print( abs(self.velocity[0]) + abs(self.velocity[1]) )
                         vel_sum = (abs(self.velocity[0]) + abs(self.velocity[1])) / self.speed_multiplier
-                        #print(self.speed_multiplier, " ",  vel_sum )
                         ball_paddle_abs_pos = abs( self.rect.centery - paddle.rect.centery )
                         collision_area = ( paddle.rect.height/2 + self.rect.height )
                         ball_speed_x = round ( -self.velocity[0]/abs(self.velocity[0]) * ( 1 - ball_paddle_abs_pos/collision_area ) * vel_sum )

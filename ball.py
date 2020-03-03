@@ -1,4 +1,5 @@
 import pygame as pg
+import time
 
 class Ball(pg.sprite.Sprite):
     """Ball class"""
@@ -48,7 +49,28 @@ class Ball(pg.sprite.Sprite):
             self.bounce_y()
     
     def paddle_collide(self, paddles):
+        if not self.colided:
+            for paddle in pg.sprite.spritecollide( self, paddles, 0):#for all collided paddles
+                if self.velocity[0] > 0:
+                    shift_x = self.rect.right - paddle.rect.left
+                else:
+                    shift_x = self.rect.left - paddle.rect.right
+                if self.velocity[1] > 0: 
+                    shift_y = self.rect.bottom - paddle.rect.top
+                else:
+                    shift_y = self.rect.top - paddle.rect.bottom
+                
+                #bounce from the long edge
+                if shift_x * self.velocity[0] <= shift_y * self.velocity[1]:
+                    shift_y = round( self.velocity[1]/self.velocity[0] * shift_x )
+                #bounce from the short edge
+                else:
+                    shift_x = round( self.velocity[0]/self.velocity[1] * shift_y )
+                    self.bounce_y()
 
+                self.rect.move_ip( -shift_x, -shift_y )
+                self.bounce_x()
+        
         if self.rect.right > self.area.right:
             for paddle in paddles:
                 if paddle != paddles.sprites()[1]:

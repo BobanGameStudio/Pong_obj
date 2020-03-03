@@ -84,9 +84,7 @@ class Game(object):
         """
     
         while not self.handle_events():
-            self.last_time = pg.time.get_ticks()
-            if pg.time.get_ticks() - self.last_time > 20:
-                print("shit")
+            
             self.all.clear(self.window, self.background)
             self.all.update()
 
@@ -97,7 +95,7 @@ class Game(object):
             dirty = self.all.draw(self.window)
             pg.display.update(dirty)
             
-            self.clock.tick(50)         
+            self.clock.tick(25)         
 
     def handle_events(self):
         """
