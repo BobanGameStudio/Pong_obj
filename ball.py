@@ -60,6 +60,10 @@ class Ball(pg.sprite.Sprite):
                 else:
                     shift_y = self.rect.top - paddle.rect.bottom
                 
+                vel_sum = (abs(self.velocity[0]) + abs(self.velocity[1])) / self.speed_multiplier
+                abs_diff_between_center_y = abs( self.rect.centery - paddle.rect.centery )
+                collision_area = ( paddle.rect.height/2 + self.rect.height )
+                
                 #bounce from the long edge
                 if shift_x * self.velocity[0] <= shift_y * self.velocity[1]:
                     shift_y = round( self.velocity[1]/self.velocity[0] * shift_x )
@@ -70,6 +74,14 @@ class Ball(pg.sprite.Sprite):
 
                 self.rect.move_ip( -shift_x, -shift_y )
                 self.bounce_x()
+
+                ball_speed_x = int ( round ( self.velocity[0]/abs(self.velocity[0]) * ( 1 - abs_diff_between_center_y/collision_area ) * vel_sum ) )
+                ball_speed_y = int ( round ( self.velocity[1]/abs(self.velocity[1]) * abs_diff_between_center_y/collision_area * vel_sum ) )
+
+                if abs( ball_speed_y ) < 1:
+                    ball_speed_y = 1 * self.velocity[1]/abs(self.velocity[1])
+                    ball_speed_x = ( vel_sum - 1 ) * self.velocity[0]/abs(self.velocity[0])
+                self.set_velocity( [ ball_speed_x, ball_speed_y ] )
         
         if self.rect.right > self.area.right:
             for paddle in paddles:
