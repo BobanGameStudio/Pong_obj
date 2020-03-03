@@ -95,10 +95,8 @@ class Game(object):
             self.all.clear(self.window, self.background)
             self.all.update()
 
-            for ball in self.balls:
-                ball.paddle_collide( self.all_paddles )
-            self.fps.current_fps( self.clock )
-
+            for paddle in self.e_paddles:
+                paddle.follow_the_ball( self.balls )
             for ball in self.balls:
                 ball.paddle_collide( self.all_paddles )
             self.fps.current_fps( self.clock )
@@ -113,7 +111,7 @@ class Game(object):
         """
         Handling system events
 
-        :return True if pg reported a quit event
+        :return True if pygame reported a quit event
         """
         for event in pg.event.get():
             if event.type == pg.locals.QUIT:
