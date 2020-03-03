@@ -42,26 +42,27 @@ class Main_Menu(object):
         #Create menu images
         img_folder = "main_menu_buttons"
         self.buttons = {
-                "button_start_PvP" : None ,
-                "button_start_PvE" : None,
-                "button_options" : None,
-                "button_high_score" : None,
-                "button_contact" : None,
-                "button_exit" : None,
+                "button_start_PvP" : [None, False] ,
+                "button_start_PvE" : [None, False],
+                "button_options" : [None, False],
+                "button_high_score" : [None, False],
+                "button_contact" : [None, False],
+                "button_exit" : [None, False],
                 }
             #Buttons possition
         first_button_pos = ( self.window.get_width()/2, self.window.get_height() * 3/10)
         button_spacing = self.window.get_height() * 2/20
 
+        #creating buttons
         all_buttons = []
         for i, button_name in enumerate( self.buttons ):
-            self.buttons[button_name] = ( Button(folder_name = img_folder, \
+            self.buttons[button_name][0] = ( Button(folder_name = img_folder, \
                                             img_name = button_name, pos = (first_button_pos[0], first_button_pos[1] + button_spacing * i) ) )
-            all_buttons.append ( self.buttons[button_name] )
+            all_buttons.append ( self.buttons[button_name][0] )
 
         self.allsprites = pg.sprite.RenderPlain( all_buttons )
 
-        self.choosed_option = [False, False, False, False, False, False]
+        #self.choosed_option = [False, False, False, False, False, False]
 
         #Clock initialization
         self.clock = pg.time.Clock()
@@ -86,47 +87,42 @@ class Main_Menu(object):
             self.allsprites.draw( self.window )
 
             for i, button_name in enumerate( self.buttons ):
-                if self.buttons[button_name].rect.collidepoint( ( mx, my ) ):
+                if self.buttons[button_name][0].rect.collidepoint( ( mx, my ) ):
                     if self.click_down == True:
-                        self.buttons[button_name].push()
+                        self.buttons[button_name][0].push()
                     elif self.click_up == True:
-                        self.choosed_option[i] = True
-                        # selected_option = self.game_windows[i]
-                        # if selected_option != True:
-                        #     selected_option_obj = selected_option( self.window )
-                        #     selected_option_obj.run()
-                        # else:
-                        #     return True
-                        # del selected_option_obj
+                        self.buttons[button_name][1] = True #option was choosed
                     else:
-                        self.buttons[button_name].release()
+                        self.buttons[button_name][0].release()
                 else:
-                    self.buttons[button_name].release()
-            for opt_num, opt in enumerate( self.choosed_option ):
-                if opt == True:
-                    if opt_num == 0:
+                    self.buttons[button_name][0].release()
+
+            for i, button_name in enumerate( self.buttons ):
+                if self.buttons[button_name][1] == True:
+                    if button_name == "button_start_PvP":
                         game = Game(self.window, "pvp")
                         game.run()
                         del game
-                    elif opt_num == 1:
+                    elif button_name == "button_start_PvE":
                         game = Game(self.window, "pve")
                         game.run()
                         del game
-                    elif opt_num == 2:
+                    elif button_name == "button_options":
                         options = Options(self.window)
                         options.run()
                         del options
-                    elif opt_num == 3:
+                    elif button_name == "button_high_score":
                         high_score =High_Score(self.window)
                         high_score.run()
                         del high_score
-                    elif opt_num == 4:
+                    elif button_name == "button_contact":
                         contact = Contact(self.window)
                         contact.run()
                         del contact
-                    elif opt_num == 5:
+                    elif button_name == "button_exit":
                         return True
-                    self.choosed_option[opt_num] = False
+                    self.buttons[button_name][1] = False
+        
             pg.display.flip()
 
         pg.quit()
