@@ -35,14 +35,16 @@ class Game(object):
                                                         , text_color= (200, 200, 200), text_background_color= (0, 0, 0))
         
         # Initialize Game Groups
-        self.paddles = pg.sprite.Group()
+        self.all_paddles = pg.sprite.Group()
+        self.p_paddles = pg.sprite.Group()
+        self.e_paddles = pg.sprite.Group()
         self.balls = pg.sprite.Group()
         self.fps_group = pg.sprite.Group()
         self.score = pg.sprite.Group()
         self.all = pg.sprite.RenderUpdates() 
     
         # assign default groups to each sprite class
-        Paddle.containers = self.paddles, self.all
+        Paddle.containers = self.all_paddles, self.all
         Ball.containers = self.balls, self.all
         Fps.containers = self.fps_group
         Score.containers = self.score, self.all
@@ -51,17 +53,22 @@ class Game(object):
         number_of_players = 2
 
         if number_of_players >= 1:
-            Paddle( pos= ( self.window.get_width() * 1/30, self.window.get_height()/2 ), move_up_button= 119, move_down_button= 115, score = Score( (self.window_rect.right * 1/3, self.window_rect.bottom * 1/10) ) )
+            Paddle( pos= ( self.window.get_width() * 1/30, self.window.get_height()/2 ), move_up_button= 119, move_down_button= 115, score = Score( (self.window_rect.right * 1/3, self.window_rect.bottom * 1/10) ), mode = "player" )
         if number_of_players >= 2:
             if game_mode == "pvp":
-                Paddle( pos= ( self.window.get_width() * 29/30, self.window.get_height()/2 ), move_up_button= 273, move_down_button= 274, score = Score( (self.window_rect.right * 2/3, self.window_rect.bottom * 1/10) ) )
+                Paddle( pos= ( self.window.get_width() * 29/30, self.window.get_height()/2 ), move_up_button= 273, move_down_button= 274, score = Score( (self.window_rect.right * 2/3, self.window_rect.bottom * 1/10) ), mode = "player" )
             elif game_mode == "pve":
-                Paddle( pos= ( self.window.get_width() * 29/30, self.window.get_height()/2 ), move_up_button= 273, move_down_button= 274, score = Score( (self.window_rect.right * 2/3, self.window_rect.bottom * 1/10) ) )
+                Paddle( pos= ( self.window.get_width() * 29/30, self.window.get_height()/2 ), move_up_button= 273, move_down_button= 274, score = Score( (self.window_rect.right * 2/3, self.window_rect.bottom * 1/10) ), mode = "environment" )
         if number_of_players >= 3:
-            Paddle( pos= ( self.window.get_width() * 22/30, self.window.get_height()/2 ), move_up_button= 119, move_down_button= 115, score = Score( (self.window_rect.x * 1/3, self.window_rect.y * 5/10)) )
+            Paddle( pos= ( self.window.get_width() * 22/30, self.window.get_height()/2 ), move_up_button= 119, move_down_button= 115, score = Score( (self.window_rect.x * 1/3, self.window_rect.y * 5/10)), mode = "player" )
         if number_of_players >= 4:
-            Paddle( pos= ( self.window.get_width() * 1/30, self.window.get_height()/2 ), move_up_button= 273, move_down_button= 274, score = Score( (self.window_rect.x * 1/3, self.window_rect.y * 8/10) ) )
+            Paddle( pos= ( self.window.get_width() * 1/30, self.window.get_height()/2 ), move_up_button= 273, move_down_button= 274, score = Score( (self.window_rect.x * 1/3, self.window_rect.y * 8/10) ), mode = "player" )
         #endregion 
+        for paddle in self.all_paddles.sprites():
+            if paddle.mode == "player":
+                self.p_paddles.add(paddle)
+            elif paddle.mode == "environment":
+                self.e_paddles.add(paddle)
 
         #region initiate balls
         number_of_balls = 1
@@ -89,7 +96,11 @@ class Game(object):
             self.all.update()
 
             for ball in self.balls:
-                ball.paddle_collide( self.paddles )
+                ball.paddle_collide( self.all_paddles )
+            self.fps.current_fps( self.clock )
+
+            for ball in self.balls:
+                ball.paddle_collide( self.all_paddles )
             self.fps.current_fps( self.clock )
 
             dirty = self.all.draw(self.window)
@@ -118,6 +129,6 @@ class Game(object):
 
         pressed = pg.key.get_pressed()
 
-        for player in self.paddles:
+        for player in self.p_paddles:
             player.move( pressed, self.window_rect )
         
