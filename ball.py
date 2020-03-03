@@ -28,7 +28,7 @@ class Ball(pg.sprite.Sprite):
         self.start_velocity = [ x_start_speed, y_start_speed ]
         self.set_velocity( self.start_velocity )
 
-        self.colided = False
+        self.collided = False
 
     def set_pos(self, pos):
         self.rect.center = pos
@@ -49,7 +49,7 @@ class Ball(pg.sprite.Sprite):
             self.bounce_y()
     
     def paddle_collide(self, paddles):
-        if not self.colided:
+        if not self.collided:
             for paddle in pg.sprite.spritecollide( self, paddles, 0):#for all collided paddles
                 if self.velocity[0] > 0:
                     shift_x = self.rect.right - paddle.rect.left
@@ -60,6 +60,7 @@ class Ball(pg.sprite.Sprite):
                 else:
                     shift_y = self.rect.top - paddle.rect.bottom
                 
+                #calculations to determine the new speed
                 vel_sum = (abs(self.velocity[0]) + abs(self.velocity[1])) / self.speed_multiplier
                 abs_diff_between_center_y = abs( self.rect.centery - paddle.rect.centery )
                 collision_area = ( paddle.rect.height/2 + self.rect.height )
@@ -69,20 +70,28 @@ class Ball(pg.sprite.Sprite):
                     shift_y = round( self.velocity[1]/self.velocity[0] * shift_x )
                 #bounce from the short edge
                 else:
-                    shift_x = round( self.velocity[0]/self.velocity[1] * shift_y )
+                    shift_x = round( ( 1 if self.velocity[1] >= 0 else -1 ) * shift_y )
                     self.bounce_y()
 
                 self.rect.move_ip( -shift_x, -shift_y )
                 self.bounce_x()
 
-                ball_speed_x = int ( round ( self.velocity[0]/abs(self.velocity[0]) * ( 1 - abs_diff_between_center_y/collision_area ) * vel_sum ) )
-                ball_speed_y = int ( round ( self.velocity[1]/abs(self.velocity[1]) * abs_diff_between_center_y/collision_area * vel_sum ) )
+                ball_speed_x = int ( round ( ( 1 if self.velocity[0] >= 0 else -1 ) * ( 1 - abs_diff_between_center_y/collision_area ) * vel_sum ) )
+                ball_speed_y = int ( round ( ( 1 if self.velocity[1] >= 0 else -1 ) * abs_diff_between_center_y/collision_area * vel_sum ) )
 
-                if abs( ball_speed_y ) < 1:
-                    ball_speed_y = 1 * self.velocity[1]/abs(self.velocity[1])
-                    ball_speed_x = ( vel_sum - 1 ) * self.velocity[0]/abs(self.velocity[0])
+                if abs( ball_speed_y ) < 2:
+                    ball_speed_y = 2 * ( 1 if self.velocity[1] >= 0 else -1 )
+                    ball_speed_x = ( vel_sum - 2 ) * ( 1 if self.velocity[0] >= 0 else -1 )
                 self.set_velocity( [ ball_speed_x, ball_speed_y ] )
-        
+
+                self.collided = True
+        else:#if 'self.collided == True'
+            if len( pg.sprite.spritecollide( self, paddles, 0) ) == 0:
+                self.collided = False
+                for paddle in paddles:
+                    if (paddle.rect.left < self.rect.right < paddle.rect.right) or (paddle.rect.left < self.rect.left < paddle.rect.right):
+                        self.collided = True #Ball is not collided but still in paddle waist
+
         if self.rect.right > self.area.right:
             for paddle in paddles:
                 if paddle != paddles.sprites()[1]:

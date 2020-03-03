@@ -93,9 +93,10 @@ class Game(object):
             self.fps.current_fps( self.clock )
 
             dirty = self.all.draw(self.window)
+            
             pg.display.update(dirty)
             
-            self.clock.tick(25)         
+            self.clock.tick(50)         
 
     def handle_events(self):
         """
