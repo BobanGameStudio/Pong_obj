@@ -1,1 +1,0 @@
-#zrobic tabele wynikow 
