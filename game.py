@@ -6,6 +6,7 @@ from paddle import Player_paddle, Environment_paddle
 from ball import Ball
 from fps import Fps
 from score import Score
+from high_score import save_result
 
 class Game(object):
     def __init__(self, window, game_mode):
@@ -115,9 +116,11 @@ class Game(object):
             if event.type == pg.locals.QUIT:
                 pg.quit()
                 sys.exit()
+                save_result(self.p_paddles.sprites()[0].score.current_score - self.e_paddles.sprites()[0].score.current_score)
                 return True
             if event.type == KEYDOWN and event.key == K_ESCAPE:
                 pg.mouse.set_visible(1)
+                save_result(self.p_paddles.sprites()[0].score.current_score - self.e_paddles.sprites()[0].score.current_score)
                 return True
             if event.type == KEYDOWN and event.key == K_F1:
                 self.fps.reverse_visibility( self.all )
@@ -127,4 +130,3 @@ class Game(object):
 
         for player in self.p_paddles:
             player.move( pressed )
-        

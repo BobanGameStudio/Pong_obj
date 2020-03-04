@@ -18,7 +18,7 @@ class High_Score(object):
         self.text_highscores, self.text_highscores_pos = make_text( text= "High scores", font_name= 'casio-fx-702p\casio-fx-702p.ttf'\
                                                             , size= 70, pos= (self.window.get_width()/2, self.window.get_height() * 3/20)\
                                                             , text_color= (200, 200, 200), text_background_color= (0, 0, 0))
-        self.text_highscores_des, self.text_highscores_des_pos = make_text( text= "(only from pve)", font_name= 'casio-fx-702p\casio-fx-702p.ttf'\
+        self.text_highscores_des, self.text_highscores_des_pos = make_text( text= "maximum difference between players points(only from pve)", font_name= 'casio-fx-702p\casio-fx-702p.ttf'\
                                                             , size= 25, pos= (self.window.get_width()/2, self.window.get_height() * 4/20)\
                                                             , text_color= (200, 200, 200), text_background_color= (0, 0, 0))
 
@@ -28,7 +28,7 @@ class High_Score(object):
         with open( "highscores/High Scores.txt" ) as file:
             for i, wiersz in enumerate( file ):
                 self.points, self.points_pos = make_text( text= "%.f" %int(wiersz), font_name= 'casio-fx-702p\casio-fx-702p.ttf'\
-                                                            , size= 30, pos= (self.window.get_width()* 1/4, self.window.get_height() * (5 + i)/20)\
+                                                            , size= 30, pos= (self.window.get_width()* 1/4, self.window.get_height() * (6 + i)/20)\
                                                             , text_color= (200, 200, 200), text_background_color= (0, 0, 0))     
                 self.window.blit( self.points, self.points_pos )                
 
@@ -58,3 +58,50 @@ class High_Score(object):
                     return True
                 elif event.type == KEYDOWN and event.key == K_ESCAPE:
                     return True
+
+def save_result(result):
+    results = []
+    with open( "highscores/High Scores.txt" ) as file:
+        for i, wiersz in enumerate( file ):
+            results.append( int( wiersz ) )
+    file.close()
+
+    results.append( result )
+    results = quick_sort( results )
+
+    with open( "highscores/High Scores.txt", "w" ) as file:
+        for i in range( 0, len(results)-1 ):
+            file.write( str( results[i] ) + "\n" )
+
+def quick_sort(list, descending = True):
+    """ Quick sort for tuple, if optional argument is "True" then sort is descending, if "False" then ascending """
+    if len(list) <= 1: #Jezeli na liscie do posortowania jest tylko jeden element zwroc go
+        return list
+    #Wybranie ostatniego elementu
+    selected_item = ( list[ len(list)-1 ] )
+    list = list[ 0:len(list)-1 ]#Usuniecie elementow z listy
+
+    smaller = [ ]#Stworzenie list elementow mniejszych oraz wiekszych od wybranego
+    bigger = [ ]
+    
+    for nr_elementu, element in enumerate(list):#Przydzielenie elementow do list w zaleznosci od tego czy sa smaller czy bigger od elementu wybranego
+        if element < selected_item:
+            #for i in range(0, len(list)):
+            smaller.append(list[nr_elementu])
+        else:
+            #for i in range(0, len(list)):
+            bigger.append(list[nr_elementu])
+    
+    smaller = quick_sort(smaller, descending)
+    bigger = quick_sort(bigger, descending)
+
+    if descending:
+        result = bigger
+        result.append(selected_item)
+        result =  result + smaller
+    else:
+        result = smaller
+        result.append(selected_item)
+        result =  result + bigger
+    
+    return result
