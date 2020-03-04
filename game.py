@@ -2,7 +2,7 @@ import pygame as pg
 from pygame.locals import *
 
 from load import make_text
-from paddle import Paddle
+from paddle import Player_paddle, Environment_paddle
 from ball import Ball
 from fps import Fps
 from score import Score
@@ -44,38 +44,36 @@ class Game(object):
         self.all = pg.sprite.RenderUpdates() 
     
         # assign default groups to each sprite class
-        Paddle.containers = self.all_paddles, self.all
+        Player_paddle.containers = self.all_paddles, self.p_paddles , self.all
+        Environment_paddle.containers = self.all_paddles, self.e_paddles , self.all
         Ball.containers = self.balls, self.all
         Fps.containers = self.fps_group
         Score.containers = self.score, self.all
-
-        #region initiate players
-        number_of_players = 2
-
-        if number_of_players >= 1:
-            Paddle( pos= ( self.window.get_width() * 1/30, self.window.get_height()/2 ), move_up_button= 119, move_down_button= 115, score = Score( (self.window_rect.right * 1/3, self.window_rect.bottom * 1/10) ), mode = "player" )
-        if number_of_players >= 2:
-            if game_mode == "pvp":
-                Paddle( pos= ( self.window.get_width() * 29/30, self.window.get_height()/2 ), move_up_button= 273, move_down_button= 274, score = Score( (self.window_rect.right * 2/3, self.window_rect.bottom * 1/10) ), mode = "player" )
-            elif game_mode == "pve":
-                Paddle( pos= ( self.window.get_width() * 29/30, self.window.get_height()/2 ), move_up_button= 273, move_down_button= 274, score = Score( (self.window_rect.right * 2/3, self.window_rect.bottom * 1/10) ), mode = "environment" )
-        if number_of_players >= 3:
-            Paddle( pos= ( self.window.get_width() * 22/30, self.window.get_height()/2 ), move_up_button= 119, move_down_button= 115, score = Score( (self.window_rect.x * 1/3, self.window_rect.y * 5/10)), mode = "player" )
-        if number_of_players >= 4:
-            Paddle( pos= ( self.window.get_width() * 1/30, self.window.get_height()/2 ), move_up_button= 273, move_down_button= 274, score = Score( (self.window_rect.x * 1/3, self.window_rect.y * 8/10) ), mode = "player" )
-        #endregion 
-        for paddle in self.all_paddles.sprites():
-            if paddle.mode == "player":
-                self.p_paddles.add(paddle)
-            elif paddle.mode == "environment":
-                self.e_paddles.add(paddle)
-
+    
         #region initiate balls
         number_of_balls = 1
         for i in range( 0, number_of_balls ):
             Ball( start_pos = (self.window.get_width()/2, self.window.get_height() * 1/3 + i * self.window.get_height() * 1/40),\
                  x_start_speed = 5, y_start_speed = 5 if i%2 == 0 else  -10   )
         #endregion
+
+        #region initiate players
+        number_of_players = 2
+
+        if number_of_players >= 1:
+            Player_paddle( pos= ( self.window.get_width() * 1/30, self.window.get_height()/2 ), score = Score( (self.window_rect.right * 1/3, self.window_rect.bottom * 1/10) )\
+                                , move_up_button= 119, move_down_button= 115, )
+        if number_of_players >= 2:
+            if game_mode == "pvp":
+                Player_paddle( pos= ( self.window.get_width() * 29/30, self.window.get_height()/2 ), score = Score( (self.window_rect.right * 2/3, self.window_rect.bottom * 1/10) )\
+                                , move_up_button= 273, move_down_button= 274, )
+            elif game_mode == "pve":
+                Environment_paddle( pos= ( self.window.get_width() * 29/30, self.window.get_height()/2 ), score = Score( (self.window_rect.right * 2/3, self.window_rect.bottom * 1/10) ))
+        if number_of_players >= 3:
+            Player_paddle( pos= ( self.window.get_width() * 22/30, self.window.get_height()/2 ), move_up_button= 119, move_down_button= 115, score = Score( (self.window_rect.x * 1/3, self.window_rect.y * 5/10)), mode = "player" )
+        if number_of_players >= 4:
+            Player_paddle( pos= ( self.window.get_width() * 1/30, self.window.get_height()/2 ), move_up_button= 273, move_down_button= 274, score = Score( (self.window_rect.x * 1/3, self.window_rect.y * 8/10) ), mode = "player" )
+        #endregion 
         
         #initiate fps
         self.fps = Fps()
@@ -96,7 +94,7 @@ class Game(object):
             self.all.update()
 
             for paddle in self.e_paddles:
-                paddle.follow_the_ball( self.balls )
+                paddle.move( self.balls )
             for ball in self.balls:
                 ball.paddle_collide( self.all_paddles )
             self.fps.current_fps( self.clock )
@@ -128,5 +126,5 @@ class Game(object):
         pressed = pg.key.get_pressed()
 
         for player in self.p_paddles:
-            player.move( pressed, self.window_rect )
+            player.move( pressed )
         

@@ -19,7 +19,7 @@ class Ball(pg.sprite.Sprite):
         self.image = pg.Surface([ self.area.width * 1/100 , self.area.width * 1/100]).convert()
         self.image.fill((200, 200, 200))
 
-        self.start_pos = start_pos
+        self.start_pos = start_pos#change
         self.rect = self.image.get_rect()
         self.set_pos( self.start_pos )
 
