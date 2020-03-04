@@ -25,6 +25,7 @@ class Paddle(pg.sprite.Sprite, ABC):
 
         self.score = score #object of class score
 
+    @abstractmethod
     def move(self): 
         pass
         
@@ -32,7 +33,7 @@ class Paddle(pg.sprite.Sprite, ABC):
 class Player_paddle(Paddle):
 
     def __init__( self, *, pos, score, move_up_button, move_down_button ):
-        Paddle.__init__(self, pos, score) #call Sprite initializer
+        Paddle.__init__(self, pos = pos, score = score) #call Sprite initializer
 
         self.move_up_button = move_up_button # buttons responsible for moving in the right direction
         self.move_down_button = move_down_button
@@ -41,28 +42,27 @@ class Player_paddle(Paddle):
         """detect if move button for specific paddle was pressed""" 
         direction = pressed[ self.move_down_button ] - pressed[ self.move_up_button ]
         self.rect.move_ip( 0, direction * self.speed)
-        self.rect = self.rect.clamp( screen_rect )# Don't let paddle go out of the screen
+        self.rect = self.rect.clamp( self.screen_rect )# Don't let paddle go out of the screen
 
 class Environment_paddle(Paddle):
 
-    def __init__( self, *, pos, score, ):
-        Paddle.__init__(self, pos, score) #call Sprite initializer
+    def __init__( self, *, pos, score ):
+        Paddle.__init__(self, pos = pos, score = score) #call Sprite initializer
 
     def move(self, balls):
-        def follow_the_ball(self, balls):
-            for ball in balls:
-                # Computer palette movement
-                if ball.velocity[0] > 0:
-                    disp_rect = pg.display.get_surface().get_rect()
-                    if ball.rect.centerx < disp_rect.centerx:
-                        if ball.rect.centery < self.rect.centery and self.rect.centery > disp_rect.height * 2/3 :
-                            self.rect.move_ip( 0, -self.speed ) 
-                        elif ball.rect.centery > self.rect.centery and self.rect.centery < disp_rect.height * 1/3:
-                            self.rect.move_ip( 0, self.speed ) 
-                    else:
-                        if ball.rect.centery < self.rect.centery + self.rect.height/4  :
-                            self.rect.move_ip( 0, -self.speed ) 
-                        elif ball.rect.centery > self.rect.centery - self.rect.height/4 :
-                            self.rect.move_ip( 0, self.speed )
+        for ball in balls:
+            # Computer palette movement
+            if ball.velocity[0] > 0:
+                screen_rect = self.screen_rect
+                if ball.rect.centerx < screen_rect.centerx:
+                    if ball.rect.centery < self.rect.centery and self.rect.centery > screen_rect.height * 2/3 :
+                        self.rect.move_ip( 0, -self.speed ) 
+                    elif ball.rect.centery > self.rect.centery and self.rect.centery < screen_rect.height * 1/3:
+                        self.rect.move_ip( 0, self.speed ) 
+                else:
+                    if ball.rect.centery < self.rect.centery + self.rect.height/4  :
+                        self.rect.move_ip( 0, -self.speed ) 
+                    elif ball.rect.centery > self.rect.centery - self.rect.height/4 :
+                        self.rect.move_ip( 0, self.speed )
 
-                    self.rect = self.rect.clamp( disp_rect )# Don't let paddle go out of the screen
+                self.rect = self.rect.clamp( screen_rect )# Don't let paddle go out of the screen
