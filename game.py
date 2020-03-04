@@ -31,8 +31,11 @@ class Game(object):
         pg.display.flip()
 
         if pg.font:
-            self.text_menu, self.text_menu_pos = make_text( text= "game_section", font_name= 'casio-fx-702p\casio-fx-702p.ttf'\
-                                                        , size= 70, pos= (self.window.get_width()/2, self.window.get_height() * 3/20)\
+            # self.text_menu, self.text_menu_pos = make_text( text= "game_section", font_name= 'casio-fx-702p\casio-fx-702p.ttf'\
+            #                                             , size= 70, pos= (self.window.get_width()/2, self.window.get_height() * 3/20)\
+            #                                             , text_color= (200, 200, 200), text_background_color= (0, 0, 0))
+            self.text_pause, self.text_pause_pos = make_text( text= "PAUSE", font_name= 'casio-fx-702p\casio-fx-702p.ttf'\
+                                                        , size= 80, pos= (self.window.get_width()/2, self.window.get_height() * 1/2)\
                                                         , text_color= (200, 200, 200), text_background_color= (0, 0, 0))
         
         # Initialize Game Groups
@@ -116,17 +119,33 @@ class Game(object):
             if event.type == pg.locals.QUIT:
                 pg.quit()
                 sys.exit()
-                save_result(self.p_paddles.sprites()[0].score.current_score - self.e_paddles.sprites()[0].score.current_score)
+                if game_mode == "pve":
+                    save_result(self.p_paddles.sprites()[0].score.current_score - self.e_paddles.sprites()[0].score.current_score)
                 return True
             if event.type == KEYDOWN and event.key == K_ESCAPE:
                 pg.mouse.set_visible(1)
-                save_result(self.p_paddles.sprites()[0].score.current_score - self.e_paddles.sprites()[0].score.current_score)
+                if game_mode == "pve":
+                    save_result(self.p_paddles.sprites()[0].score.current_score - self.e_paddles.sprites()[0].score.current_score)
                 return True
             if event.type == KEYDOWN and event.key == K_F1:
                 self.fps.reverse_visibility( self.all )
+            if event.type == KEYDOWN and event.key == K_p:
+                self.pause()
                 
 
         pressed = pg.key.get_pressed()
 
         for player in self.p_paddles:
             player.move( pressed )
+
+    def pause( self ):
+        self.window.blit(self.text_pause, self.text_pause_pos)
+        pg.display.update()
+        pause_mode = True
+        while pause_mode:
+            for event in pg.event.get():
+                if event.type == KEYDOWN and event.key == K_p:
+                    pause_mode = False
+        self.window.blit(self.background, (0, 0))
+        pg.display.update()
+        
