@@ -148,4 +148,4 @@ class Game(object):
                     pause_mode = False
         self.window.blit(self.background, (0, 0))
         pg.display.update()
-        
+        #nothing
