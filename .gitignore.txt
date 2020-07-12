@@ -2,3 +2,4 @@ window - usunac.py
 tempCodeRunnerFile.py
 __pycache__/
 .vscode/
+*.json
