@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 class Paddle(pg.sprite.Sprite, ABC):
     """paddle class"""
 
-    def __init__( self, *, pos, score ):
+    def __init__( self, *, pos, score, speed ):
         """ 
         Paddle constructor. 
         
@@ -17,11 +17,11 @@ class Paddle(pg.sprite.Sprite, ABC):
         screen = pg.display.get_surface()
         self.screen_rect = screen.get_rect()
 
-        self.image = pg.Surface([ self.screen_rect.width * 1/64 , self.screen_rect.height * 1/9]).convert()
+        self.image = pg.Surface([ self.screen_rect.width * 5/256 , self.screen_rect.height * 1/9]).convert()
         self.image.fill((200, 200, 200))
         self.rect = self.image.get_rect( center = pos )
 
-        self.speed = 10
+        self.speed = speed
 
         self.score = score #object of class score
 
@@ -32,8 +32,8 @@ class Paddle(pg.sprite.Sprite, ABC):
 
 class Player_paddle(Paddle):
 
-    def __init__( self, *, pos, score, move_up_button, move_down_button ):
-        Paddle.__init__(self, pos = pos, score = score) #call Sprite initializer
+    def __init__( self, *, pos, score, move_up_button, move_down_button, speed= 10):
+        Paddle.__init__(self, pos = pos, score = score, speed = speed) #call Sprite initializer
 
         self.move_up_button = move_up_button # buttons responsible for moving in the right direction
         self.move_down_button = move_down_button
@@ -46,8 +46,8 @@ class Player_paddle(Paddle):
 
 class Environment_paddle(Paddle):
 
-    def __init__( self, *, pos, score ):
-        Paddle.__init__(self, pos = pos, score = score) #call Sprite initializer
+    def __init__( self, *, pos, score, speed= 10 ):
+        Paddle.__init__(self, pos = pos, score = score, speed= speed ) #call Sprite initializer
 
     def move(self, balls):
         for ball in balls:

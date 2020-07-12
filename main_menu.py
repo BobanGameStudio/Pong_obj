@@ -31,6 +31,10 @@ class Main_Menu(object):
         pg.display.set_caption("Pong game") # Name of the game window
 
         #Create background surface
+        if self.window.get_size()[1] < 768:
+            self.small_window = 1
+        else:
+            self.small_window = 0
         self.background = pg.Surface( self.window.get_size() ).convert()
         self.background.fill( (0, 0, 0) )
 
@@ -63,6 +67,21 @@ class Main_Menu(object):
         self.allsprites = pg.sprite.RenderPlain( all_buttons )
 
         #self.choosed_option = [False, False, False, False, False, False]
+
+        #region load options from file
+        self.options_sett = []
+        with open( "options.txt" ) as file:
+            options = file.read().splitlines()# Przepisansie ustawien z pliku
+        file.close()
+        for option_num, option in enumerate( options ):
+            if option_num == 2:
+                if "0" in option:
+                    self.options_sett.append( "easy" )
+                elif "1" in option:
+                    self.options_sett.append( "hard" )
+            else:
+                self.options_sett.append( int( option[ option.index(":") + 1: len(option) ] ) )# Zapis klawiszy
+        #endregion
 
         #Clock initialization
         self.clock = pg.time.Clock()
@@ -100,23 +119,23 @@ class Main_Menu(object):
             for i, button_name in enumerate( self.buttons ):
                 if self.buttons[button_name][1] == True:
                     if button_name == "button_start_PvP":
-                        game = Game(self.window, "pvp")
+                        game = Game(self.window, "pvp", self.options_sett)
                         game.run()
                         del game
                     elif button_name == "button_start_PvE":
-                        game = Game(self.window, "pve")
+                        game = Game(self.window, "pve", self.options_sett)
                         game.run()
                         del game
                     elif button_name == "button_options":
-                        options = Options(self.window)
-                        options.run()
+                        options = Options(self.window, self.options_sett, self.small_window)
+                        self.options_sett = options.run()
                         del options
                     elif button_name == "button_high_score":
-                        high_score =High_Score(self.window)
+                        high_score =High_Score(self.window, self.small_window)
                         high_score.run()
                         del high_score
                     elif button_name == "button_contact":
-                        contact = Contact(self.window)
+                        contact = Contact(self.window, self.small_window)
                         contact.run()
                         del contact
                     elif button_name == "button_exit":

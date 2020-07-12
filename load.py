@@ -44,6 +44,21 @@ def load_font( *, font_name, size ):
     
     return font
 
+sound_dir = os.path.join(main_dir, 'sounds')
+
+def load_sound(name):
+    class NoneSound:
+        def play(self): pass
+    if not pg.mixer or not pg.mixer.get_init():
+        return NoneSound()
+    fullname = os.path.join(sound_dir, name)
+    try:
+        sound = pg.mixer.Sound(fullname)
+    except pg.error:
+        print ('Cannot load sound: %s' % fullname)
+        raise SystemExit(str(geterror()))
+    return sound
+
 def make_text( *, text = "No text given" ,font_name = None, size = 10, pos = ( 0, 0 ), text_color = (255,255,255), text_background_color = (0,0,0) ):
     font = load_font( font_name = font_name, size = size)
     text = font.render( text, 1, text_color, text_background_color )

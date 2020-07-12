@@ -1,6 +1,8 @@
 import pygame as pg
 import time
 
+from load import load_sound
+
 class Ball(pg.sprite.Sprite):
     """Ball class"""
 
@@ -16,6 +18,11 @@ class Ball(pg.sprite.Sprite):
         screen = pg.display.get_surface()
         self.area = screen.get_rect()
 
+        #region import sound
+        self.bounce_sound = load_sound('bounce.wav')
+        self.loser_sound = load_sound('loser.wav')
+        #endregion 
+
         self.image = pg.Surface([ self.area.width * 1/100 , self.area.width * 1/100]).convert()
         self.image.fill((200, 200, 200))
 
@@ -23,7 +30,7 @@ class Ball(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.set_pos( self.start_pos )
 
-        self.speed_multiplier = 2
+        self.speed_multiplier = 1
 
         self.start_velocity = [ x_start_speed, y_start_speed ]
         self.set_velocity( self.start_velocity )
@@ -37,16 +44,18 @@ class Ball(pg.sprite.Sprite):
         self.velocity = [ vel[0] * self.speed_multiplier, vel[1] * self.speed_multiplier ]
 
     def update(self):
-        """move paddle in indicated direction"""
+        """move ball in indicated direction"""
         self.rect.move_ip( self.velocity )
 
         #bounce if ball hit bottom or top
         if self.rect.top < self.area.top:
             self.rect.top = self.area.top - self.rect.top
             self.bounce_y()
+            self.bounce_sound.play()
         elif self.rect.bottom > self.area.bottom:
             self.rect.bottom = self.area.bottom - ( self.rect.bottom - self.area.bottom )
             self.bounce_y()
+            self.bounce_sound.play()
     
     def paddle_collide(self, paddles):
         if not self.collided:
@@ -72,8 +81,10 @@ class Ball(pg.sprite.Sprite):
                 else:
                     shift_x = round( ( 1 if self.velocity[1] >= 0 else -1 ) * shift_y )
                     self.bounce_y()
+                
+                self.bounce_sound.play()
 
-                self.rect.move_ip( -shift_x, -shift_y )
+                #self.rect.move_ip( -shift_x, -shift_y )
                 self.bounce_x()
 
                 ball_speed_x = int ( round ( ( 1 if self.velocity[0] >= 0 else -1 ) * ( 1 - abs_diff_between_center_y/collision_area ) * vel_sum ) )
@@ -82,6 +93,9 @@ class Ball(pg.sprite.Sprite):
                 if abs( ball_speed_y ) < 2:
                     ball_speed_y = 2 * ( 1 if self.velocity[1] >= 0 else -1 )
                     ball_speed_x = ( vel_sum - 2 ) * ( 1 if self.velocity[0] >= 0 else -1 )
+                if abs( ball_speed_x ) < 2:
+                    ball_speed_x = 1 * ( 1 if self.velocity[0] >= 0 else -1 )
+                    ball_speed_y = ( vel_sum - 1 ) * ( 1 if self.velocity[1] >= 0 else -1 )
                 self.set_velocity( [ ball_speed_x, ball_speed_y ] )
 
                 self.collided = True
@@ -97,7 +111,7 @@ class Ball(pg.sprite.Sprite):
                 if paddle != paddles.sprites()[1]:
                     paddle.score.add_point()
             self.reset()
-        elif self.rect.left < self.area.left:
+        elif self.rect.left < self.area.left- 10:
             for paddle in paddles:
                 if paddle != paddles.sprites()[0]:
                     paddle.score.add_point()
@@ -113,6 +127,7 @@ class Ball(pg.sprite.Sprite):
 
     def reset(self):
         """Sets the ball to the start position and reverses the velocity vector in the X axis"""
+        self.loser_sound.play()
         self.set_pos( self.start_pos )
         self.bounce_x()
         ball_speed_x = ( 1 if self.velocity[1] >= 0 else -1 ) * self.start_velocity[0]

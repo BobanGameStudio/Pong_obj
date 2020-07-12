@@ -3,7 +3,7 @@ from pygame.locals import *
 from load import make_text
 
 class High_Score(object):
-    def __init__(self, window):
+    def __init__(self, window, small_window):
         """
         High Score constructor.
         """
@@ -19,7 +19,7 @@ class High_Score(object):
                                                             , size= 70, pos= (self.window.get_width()/2, self.window.get_height() * 3/20)\
                                                             , text_color= (200, 200, 200), text_background_color= (0, 0, 0))
         self.text_highscores_des, self.text_highscores_des_pos = make_text( text= "maximum difference between players points(only from pve)", font_name= 'casio-fx-702p\casio-fx-702p.ttf'\
-                                                            , size= 25, pos= (self.window.get_width()/2, self.window.get_height() * 4/20)\
+                                                            , size= 15 if small_window else 25, pos= (self.window.get_width()/2, self.window.get_height() * (10/40 if small_window else 9/40))\
                                                             , text_color= (200, 200, 200), text_background_color= (0, 0, 0))
 
         self.window.blit( self.text_highscores, self.text_highscores_pos )
@@ -28,7 +28,7 @@ class High_Score(object):
         with open( "highscores/High Scores.txt" ) as file:
             for i, wiersz in enumerate( file ):
                 self.points, self.points_pos = make_text( text= "%.f" %int(wiersz), font_name= 'casio-fx-702p\casio-fx-702p.ttf'\
-                                                            , size= 30, pos= (self.window.get_width()* 1/4, self.window.get_height() * (6 + i)/20)\
+                                                            , size= 30, pos= (self.window.get_width()* 1/4, self.window.get_height() * (7 + i)/18)\
                                                             , text_color= (200, 200, 200), text_background_color= (0, 0, 0))     
                 self.window.blit( self.points, self.points_pos )                
 
